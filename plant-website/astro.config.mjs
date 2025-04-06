@@ -7,6 +7,9 @@ export default defineConfig({
   experimental: {
       svg: true,
   },
+  server: {
+    port: 4350
+  },
     output: "server",
   adapter: node({
     mode: 'standalone'
