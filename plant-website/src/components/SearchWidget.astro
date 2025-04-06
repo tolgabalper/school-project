@@ -1,0 +1,101 @@
+---
+import { fetchPlants } from '../lib/api.js';
+const plants = await fetchPlants();
+---
+
+<!-- Search Toggle Button (always visible as a circle) -->
+<button id="search-toggle" class="search-toggle">🔍</button>
+
+<!-- Modal Overlay for the Search Widget (hidden by default) -->
+<div id="search-modal" class="search-modal hidden">
+    <div class="search-modal-content">
+        <button id="search-close" class="search-close">✖</button>
+        <header>
+            <h1 class="title">BitAr</h1>
+            <h2 class="subtitle">Mini bitki arama motoru</h2>
+            <!-- Modal Search Bar -->
+            <input type="text" id="modal-search-bar" placeholder="Bitki arama..." />
+        </header>
+        <main>
+            <div class="plant-grid">
+                {plants.map(plant => (
+                        <a
+                                href={`/plants/${plant.slug}`}
+                                class="plant-box hidden"
+                                data-name={plant.commonName.toLowerCase()}
+                                style={`background-image: url('${plant.wikipediaPhotoLink}')`}
+                        >
+                            <span class="plant-name">{plant.commonName}</span>
+                        </a>
+                ))}
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Wait until the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchToggle = document.getElementById('search-toggle');
+        const searchModal = document.getElementById('search-modal');
+        const searchClose = document.getElementById('search-close');
+        const modalSearchBar = document.getElementById('modal-search-bar');
+        const plantBoxes = searchModal.querySelectorAll('.plant-box');
+
+        // Open the modal when the toggle button is clicked
+        if (searchToggle) {
+            searchToggle.addEventListener('click', () => {
+                searchModal.classList.remove('hidden');
+            });
+        }
+
+        // Close the modal when the close button is clicked
+        if (searchClose) {
+            searchClose.addEventListener('click', () => {
+                searchModal.classList.add('hidden');
+            });
+        }
+
+        // Filter plant boxes based on search input
+        if (modalSearchBar) {
+            modalSearchBar.addEventListener('input', function() {
+                const query = modalSearchBar.value.trim().toLowerCase();
+                plantBoxes.forEach(box => {
+                    const name = box.getAttribute('data-name');
+                    if (query === "" || name.includes(query)) {
+                        box.classList.remove('hidden');
+                    } else {
+                        box.classList.add('hidden');
+                    }
+                });
+            });
+        }
+    });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const toggle = document.getElementById("search-toggle");
+    const footer = document.querySelector("footer");
+    if (!toggle || !footer) return;
+
+    const desiredMargin = 20; // desired gap between toggle and footer
+
+    function updateSearchTogglePosition() {
+        const footerRect = footer.getBoundingClientRect();
+        // If the footer is completely below the viewport, use the default bottom offset.
+      if (footerRect.top >= window.innerHeight) {
+        toggle.style.bottom = '20px';
+        } else {
+        // Calculate how much of the footer is visible.
+        const overlap = window.innerHeight - footerRect.top;
+        // Set the toggle's bottom so it sits just above the visible part of the footer.
+        toggle.style.bottom = `${overlap + desiredMargin}px`;
+        }
+        }
+
+    updateSearchTogglePosition();
+    window.addEventListener("scroll", updateSearchTogglePosition);
+    window.addEventListener("resize", updateSearchTogglePosition);
+    });
+</script>
+

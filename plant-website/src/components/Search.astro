@@ -1,0 +1,43 @@
+---
+import { fetchPlants } from '../lib/api.js';
+const plants = await fetchPlants();
+---
+
+<header>
+    <h1 class="title">BitAr</h1>
+    <h2 class="subtitle">Mini bitki arama motoru</h2>
+    <!-- Search Bar -->
+    <input type="text" id="search-bar" placeholder="Bitki arama..." />
+</header>
+<main>
+    <div class="plant-grid">
+        {plants.map(plant => (
+                <a
+                        href={`/plants/${plant.slug}`}
+                        class="plant-box hidden"
+                        data-name={plant.commonName.toLowerCase()}
+                        style={`background-image: url('${plant.wikipediaPhotoLink}')`}
+                >
+                    <span class="plant-name">{plant.commonName}</span>
+                </a>
+        ))}
+    </div>
+</main>
+
+<script>
+    // JavaScript to filter plant boxes based on the search input.
+    const searchBar = document.getElementById('search-bar');
+    const plantBoxes = document.querySelectorAll('.plant-box');
+
+    searchBar.addEventListener('input', function() {
+        const query = searchBar.value.trim().toLowerCase();
+        plantBoxes.forEach(box => {
+            const name = box.getAttribute('data-name');
+            if(query === "" || name.includes(query)) {
+                box.classList.remove('hidden');
+            } else {
+                box.classList.add('hidden');
+            }
+        });
+    });
+</script>

@@ -1,0 +1,75 @@
+---
+import { fetchPlants, fetchPlantBySlug } from '../../lib/api.js';
+import { marked } from 'marked';
+
+import Footer from '../../components/Footer.astro';
+import SearchWidget from '../../components/SearchWidget.astro';
+import Search from '../../components/Search.astro';
+
+// Pre-render pages for each plant using its slug.
+export async function getStaticPaths() {
+    const plants = await fetchPlants();
+    return plants.map(plant => ({
+        params: { slug: plant.slug }
+    }));
+}
+
+const { slug } = Astro.params;
+const plant = await fetchPlantBySlug(slug);
+// Convert the Markdown description to HTML.
+const htmlDescription = marked.parse(plant.description);
+// Generate a Wikipedia page URL using the binomial name.
+const wikipediaPageLinkTR = `https://tr.wikipedia.org/wiki/${plant.binomialName.replace(/\s+/g, '_')}`;
+const wikipediaPageLinkEN = `https://en.wikipedia.org/wiki/${plant.binomialName.replace(/\s+/g, '_')}`;
+---
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{plant.commonName} - BitAr</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<header>
+    <h1 class="title">BitAr</h1>
+    <h2 class="subtitle">Mini bitki arama motoru</h2>
+</header>
+<!-- Back Button -->
+<a class="back-button" href="/">Go Back</a>
+
+<div class="plant-details">
+    <h1>{plant.binomialName}</h1>
+    <h2>{plant.commonName}</h2>
+    <div class="description" set:html={htmlDescription}></div>
+    <!-- Updated Wikipedia link with SVG -->
+    <a href={wikipediaPageLinkTR} target="_blank" class="wikipedia-link">
+        <img src="/images/Wikipedia_wordmark.svg" alt="Wikipedia da okuyun" />
+        <span>'da oku</span>
+    </a>
+    <a href={wikipediaPageLinkEN} target="_blank" class="wikipedia-link">
+        <img src="/images/Wikipedia_wordmark.svg" alt="Wikipedia da okuyun" />
+        <span>'da oku(🇺🇸)</span>
+    </a>
+    <div class="photo-gallery">
+        {plant.photoLinks.map(link => (
+                <img src={link} alt="{plant.commonName} photo" />
+        ))}
+    </div>
+    <div class="references">
+        <p>Photo references:</p>
+        <ul>
+            <li><a href={wikipediaPageLinkEN} target="_blank">Wikipedia sayfası</a></li>
+            {plant.photoLinks.map((link, index) => (
+                    <li><a href={link} target="_blank">Fotoğraf {index + 1}</a></li>
+            ))}
+        </ul>
+    </div>
+</div>
+
+<!-- Footer -->
+<Footer />
+
+<!-- Search Widget -->
+<SearchWidget />
+</body>
+</html>
