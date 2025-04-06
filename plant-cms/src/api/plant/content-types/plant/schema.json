@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "plants",
+  "info": {
+    "singularName": "plant",
+    "pluralName": "plants",
+    "displayName": "Plants",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "binomialName": {
+      "type": "string"
+    },
+    "commonName": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "commonName"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "wikipediaPhotoLink": {
+      "type": "string"
+    },
+    "link1": {
+      "type": "string"
+    },
+    "link2": {
+      "type": "string"
+    },
+    "link3": {
+      "type": "string"
+    },
+    "link4": {
+      "type": "string"
+    },
+    "link5": {
+      "type": "string"
+    },
+    "link6": {
+      "type": "string"
+    }
+  }
+}
